@@ -8,18 +8,46 @@
             <div class="card">
                 <div class="card-image">
                     <img src="/images/gardener/<%= grdnr.image %>.jpeg" alt="<%= grdnr.name %>" class="carpenter-image">
-                    </div>
-                    <div class="card-content">
+                </div>
+                <div class="card-content">
+                    <form action="/book" method="POST" onsubmit="event.stopPropagation()">
                         <p>Person name: <%= grdnr.name %></p>
                         <p>Place : <%=grdnr.place %></p>
                         <p>Experience :<%= grdnr.experience %></p>
                         <p>Phone No: <%= grdnr.phoneno %></p>
                         <p>Ratings : <%= grdnr.ratings %></p>
                         <p>Review : <%= grdnr.reviews %></p>
-                    </div>
+                        <button class="book-btn" type="submit" onclick="bookWorker('<%= grdnr.name %>', '<%= grdnr.phoneno %>', '<%= grdnr.place %>')">Book Now</button>
+                    </form>
+                </div>
             </div>
         <% }) %>
     </div>
 </body>
+<script>
+    function bookWorker(name, phone, place) {
+      fetch('/book', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          workerName: name,
+          workerPhone: phone,
+          workerPlace: place,
+          workerType: "Gardener"
+        })
+      })
+      .then(res => {
+        if (res.ok) {
+          window.location.href = "/booking-success";
+        } else {
+          alert("Booking failed. Try again.");
+        }
+      })
+      .catch(err => console.error("Error booking:", err));
+    }
+  </script>
+  
 
 <%- include('partials/footer') %>

@@ -5,7 +5,7 @@
     <h1 style="color:black;font-family:'Courier New', Courier, monospace" class="card-header">Worker:  Electricain</h1>
     <div class="grid">
         <% electricain.forEach(function(elctcns){ %>
-            <div class="card">
+            <div class="card" onclick="selectCard(this)">
                 <div class="card-image">
                     <img src="/images/electricain/<%= elctcns.image %>.jpeg" alt="<%= elctcns.name %>" class="elctcnsenter-image">
                     </div>
@@ -15,11 +15,28 @@
                         <p>Experience :<%= elctcns.experience %></p>
                         <p>Phone No: <%= elctcns.phoneno %></p>
                         <p>Ratings : <%= elctcns.ratings %></p>
-                        <p>Review : <%= elctcns.reviews %></p>\
+                        <p>Review : <%= elctcns.reviews %></p>
+                        <button class="book-btn" onclick="bookNow(event, '<%= elctcns.name %>')">Book Now</button>
                     </div>
             </div>
         <% }) %>
     </div>
 </body>
+<script>
+    function selectCard(cardElement) {
+        // Deselect other cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.classList.remove('selected-card');
+        });
+        // Select clicked card
+        cardElement.classList.add('selected-card');
+    }
+
+    function bookNow(event, name) {
+        event.stopPropagation(); // Prevent triggering selectCard
+        // Redirect or POST logic here
+        window.location.href = "/booking-success"; // Adjust the path to your actual success page
+    }
+</script>
 
 <%- include('partials/footer') %>

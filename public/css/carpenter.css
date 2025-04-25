@@ -53,3 +53,19 @@ body {
 .card-content p:first-child {
   font-weight: bold;
 }
+.selected-card {
+  border: 2px solid green;
+  background-color: #f0fff0;
+}
+.book-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.book-btn:hover {
+  background-color: #45a049;
+}

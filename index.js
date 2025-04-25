@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from  "body-parser";
 import pg from "pg";
 import dotenv from "dotenv";
+import nodemailer from 'nodemailer';
+
 dotenv.config();
 
 const app = express();
@@ -22,6 +24,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 
 var actual_user= "";
+var actual_email="";
+
 
 app.get("/",(req,res)=>{
     res.render("home.ejs");
@@ -30,7 +34,13 @@ app.get("/home",(req,res)=>{
     res.render("home.ejs",{user:actual_user});
 });
 app.get("/signin",(req,res)=>{
+    res.render("signinoptions.ejs");
+});
+app.get("/signincustomer",(req,res)=>{
     res.render("signup.ejs");
+});
+app.get("/signinworker",(req,res)=>{
+    res.render("signupworker.ejs");
 });
 app.get("/login",(req,res)=>{
     res.render("login.ejs")
@@ -55,6 +65,9 @@ app.get("/user_home",(req,res)=>{
 });
 app.get("/userhome",(req,res)=>{
     res.render("user_home.ejs");
+});
+app.get('/booking-success', (req, res) => {
+    res.render("booking-success.ejs"); 
 });
 app.get("/profile",async (req,res)=>{
     const result = await pool.query("select * from users where username = $1",[actual_user]);
@@ -156,6 +169,7 @@ app.get("/tvrepair",async (req,res)=>{
 });
 app.post("/register", async (req,res)=>{
     const email  = req.body.email;
+    actual_email= email;
     const name = req.body.username;
     const address = req.body.address;
     const password = req.body.password;
@@ -186,6 +200,7 @@ app.post("/login", async (req,res)=>{
             const storedPassword = user.password;
             const user_email = user.email;
             const address1  = user.address;
+            actual_email = user_email;
             if(storedPassword==password){
                 actual_user = username;
                 res.render("user_home.ejs",{user:username,address:address1,userMail:user_email});
@@ -201,4 +216,47 @@ app.post("/login", async (req,res)=>{
 });
 app.listen(port,()=>{
     console.log(`server running on port ${3000}`);
+});
+
+app.use(express.json()); // make sure this is enabled to parse JSON
+
+app.post("/book", async (req, res) => {
+  try {
+    const { workerName, workerPhone, workerPlace, workerType } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'quickfixwebsite12@gmail.com',
+        pass: 'mjjl nakr jzlj xhgo'
+      }
+    });
+
+    const mailOptions = {
+      from: actual_email,
+      to: 'quickfixwebsite12@gmail.com',
+      subject: 'New Booking Request - QuickFix',
+      html: `
+        <div style="font-family:sans-serif; padding: 20px;">
+          <h3>📥 New Booking Request</h3>
+          <p><strong>User:</strong> ${actual_user}</p>
+          <p><strong>Email:</strong> ${actual_email}</p>
+          <p><strong>Worker Type:</strong> ${workerType}</p>
+          <p><strong>Worker Name:</strong> ${workerName}</p>
+          <p><strong>Location:</strong> ${workerPlace}</p>
+          <p><strong>Phone:</strong> ${workerPhone}</p>
+          <br>
+          <p>Thank you,<br><strong>Team QuickFix</strong></p>
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Booking email sent:', info.response);
+
+    res.status(200).send("Mail sent");
+  } catch (error) {
+    console.error('❌ Error sending email:', error);
+    res.status(500).send("Mail sending failed");
+  }
 });
