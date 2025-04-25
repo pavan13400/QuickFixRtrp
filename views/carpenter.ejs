@@ -1,43 +1,62 @@
 <%- include('partials/userheader') %>
-<body>
-    <link rel="stylesheet" href="css/carpenter.css">
-    <h1 style="color:black;font-family:'Courier New', Courier, monospace" class="card-header">Company name: Quickfix </h1>
-    <h1 style="color:black;font-family:'Courier New', Courier, monospace" class="card-header">Worker:  carpenter</h1>
-    <div class="grid">
-        <% carpenter.forEach(function(carp){ %>
-            <div class="card" onclick="selectCard(this)">
-                <div class="card-image">
-                <img src="/images/carpenters/<%= carp.image %>.jpeg" alt="<%= carp.name %>" class="carpenter-image">
-                </div>
-                <div class="card-content">
-                    <h2><b>Person name: <%= carp.name %></b></h2>
-                    <br>
-                    <p>Place : <%=carp.place %></p> 
-                    <p>Experience :<%= carp.experience %></p>
-                    <p>Phone No: <%= carp.phoneno %></p>
-                    <p>Ratings : <%= carp.ratings %></p>
-                    <p>Review : <%= carp.reviews %></p>
-                    <button class="book-btn" onclick="bookNow(event, '<%= carp.name %>')">Book Now</button>
-                </div>
-            </div>
-        <% }) %>
-    </div>
-</body>
-<script>
-    function selectCard(cardElement) {
-        // Deselect other cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.classList.remove('selected-card');
-        });
-        // Select clicked card
-        cardElement.classList.add('selected-card');
-    }
 
-    function bookNow(event, name) {
-        event.stopPropagation(); // Prevent triggering selectCard
-        // Redirect or POST logic here
-        window.location.href = "/booking-success"; // Adjust the path to your actual success page
-    }
-</script>
+    <body>
+        <link rel="stylesheet" href="css/carpenter.css">
+        <h1 style="color:black;font-family:'Courier New', Courier, monospace" class="card-header">Company name: Quickfix
+        </h1>
+        <h1 style="color:black;font-family:'Courier New', Courier, monospace" class="card-header">Worker: carpenter</h1>
+        <div class="grid">
+            <% carpenter.forEach(function(carp){ %>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="/images/carpenters/<%= carp.image %>.jpeg" alt="<%= carp.name %>"
+                            class="carpenter-image">
+                    </div>
+                    <div class="card-content">
+                        <form action="/book" method="POST" onsubmit="event.stopPropagation()">
+                            <h2><b>Person name: <%= carp.name %></b></h2>
+                            <br>
+                            <p>Place : <%=carp.place %>
+                            </p>
+                            <p>Experience :<%= carp.experience %>
+                            </p>
+                            <p>Phone No: <%= carp.phoneno %>
+                            </p>
+                            <p>Ratings : <%= carp.ratings %>
+                            </p>
+                            <p>Review : <%= carp.reviews %>
+                            </p>
+                            <button class="book-btn"  type="submit" onclick="bookWorker('<%=carp.name %>', '<%=carp.phoneno %>', '<%=carp.place %>')">Book Now</button>
+                        </form>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </body>
+    <script>
+        function bookWorker(name, phone, place) {
+            fetch('/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    workerName: name,
+                    workerPhone: phone,
+                    workerPlace: place,
+                    workerType: "Carpenter"
+                })
+            })
+                .then(res => {
+                    if (res.ok) {
+                        window.location.href = "/booking-success";
+                    } else {
+                        alert("Booking failed. Try again.");
+                    }
+                })
+                .catch(err => console.error("Error booking:", err));
+        }
+    </script>
 
-<%- include('partials/footer') %>
+
+    <%- include('partials/footer') %>

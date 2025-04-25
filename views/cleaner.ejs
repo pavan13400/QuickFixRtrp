@@ -10,32 +10,42 @@
                     <img src="/images/cleaner/<%= cnr.image %>.jpeg" alt="<%= cnr.name %>" class="carpenter-image">
                     </div>
                     <div class="card-content">
+                        <form action="/book" method="POST" onsubmit="event.stopPropagation()">
                         <p>Person name: <%= cnr.name %></p>
                         <p>Place : <%=cnr.place %></p>
                         <p>Experience :<%= cnr.experience %></p>
                         <p>Phone No: <%= cnr.phoneno %></p>
                         <p>Ratings : <%= cnr.ratings %></p>
                         <p>Review : <%= cnr.reviews %></p>
-                        <button class="book-btn" onclick="bookNow(event, '<%= cnr.name %>')">Book Now</button>
+                        <button class="book-btn"  type="submit" onclick="bookWorker('<%=cnr.name %>', '<%=cnr.phoneno %>', '<%=cnr.place %>')">Book Now</button>
+                    </form>
                 </div>
             </div>
         <% }) %>
     </div>
 </body>
 <script>
-    function selectCard(cardElement) {
-        // Deselect other cards
-        document.querySelectorAll('.card').forEach(card => {
-            card.classList.remove('selected-card');
-        });
-        // Select clicked card
-        cardElement.classList.add('selected-card');
-    }
-
-    function bookNow(event, name) {
-        event.stopPropagation(); // Prevent triggering selectCard
-        // Redirect or POST logic here
-        window.location.href = "/booking-success"; // Adjust the path to your actual success page
+    function bookWorker(name, phone, place) {
+        fetch('/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                workerName: name,
+                workerPhone: phone,
+                workerPlace: place,
+                workerType: "Cleaner"
+            })
+        })
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = "/booking-success";
+                } else {
+                    alert("Booking failed. Try again.");
+                }
+            })
+            .catch(err => console.error("Error booking:", err));
     }
 </script>
 <%- include('partials/footer') %>
