@@ -22,6 +22,8 @@ export default pool;
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
+app.set("view engine", "ejs");
+
 
 var actual_user= "";
 var actual_email="";
@@ -228,12 +230,12 @@ app.post("/book", async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'quickfixwebsite12@gmail.com',
-        pass: 'mjjl nakr jzlj xhgo'
+        pass: 'amih dexg deps vwey'
       }
     });
 
     const mailOptions = {
-      from: actual_email,
+      from:  'quickfixwebsite12@gmail.com',
       to: 'quickfixwebsite12@gmail.com',
       subject: 'New Booking Request - QuickFix',
       html: `
@@ -253,8 +255,7 @@ app.post("/book", async (req, res) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ Booking email sent:', info.response);
-
-    res.status(200).send("Mail sent");
+    res.render("booking-success.ejs");
   } catch (error) {
     console.error('❌ Error sending email:', error);
     res.status(500).send("Mail sending failed");

@@ -12,7 +12,7 @@
             <img src="/images/gardener/<%= grdnr.image %>.jpeg" alt="<%= grdnr.name %>" class="carpenter-image">
           </div>
           <div class="card-content">
-            <form action="/book" method="POST" onsubmit="event.stopPropagation()">
+            <form action="/book" method="POST">
               <p>Person name: <%= grdnr.name %>
               </p>
               <p>Place : <%=grdnr.place %>
